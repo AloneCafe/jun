@@ -16,7 +16,7 @@
     },
     "Cache": {
         "Network": "tcp",
-        "RedisServer": "127.0.0.1:6379",
+        "RedisServer": "192.168.1.2:6379",
         "Auth": "password",
         "SelectNo": 0,
         "MaxActive": 1000,
