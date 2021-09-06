@@ -1,81 +1,33 @@
 package dao
 
 import (
-	"bytes"
-	"crypto/sha1"
-	"crypto/sha512"
-	"encoding/gob"
 	"github.com/gomodule/redigo/redis"
 	"jun/conf"
-	"jun/dao/cache"
-	"jun/dao/db"
+	"jun/dao/underlying"
+	"jun/util"
 	"log"
 	"testing"
 )
 
-
-func key512(args ...interface{}) [64]byte {
-	var buff bytes.Buffer
-	enc := gob.NewEncoder(&buff)
-	err := enc.Encode(args)
-	if err != nil {
-		return [64]byte{}
-	}
-	return sha512.Sum512(buff.Bytes())
-}
-
-
-func key1(args ...interface{}) [20]byte {
-	var buff bytes.Buffer
-	enc := gob.NewEncoder(&buff)
-	err := enc.Encode(args)
-	if err != nil {
-		return [20]byte{}
-	}
-	return sha1.Sum(buff.Bytes())
-}
-
 var (
-	genKey = key1
+	genKey = util.Key1
 )
-
-// parameter no need pointer
-func serializeValue(i interface{}) []byte {
-	var buff bytes.Buffer
-	enc := gob.NewEncoder(&buff)
-	err := enc.Encode(i)
-	if err != nil {
-		return nil
-	}
-	return buff.Bytes()
-}
-
-// parameter need pointer
-func deserializeValue(b []byte, i interface{}) bool {
-	buff := bytes.NewBuffer(b)
-	enc := gob.NewDecoder(buff)
-	err := enc.Decode(i)
-	if err != nil {
-		return false
-	}
-	return true
-}
 
 func TestRedis(arg1 string, arg2 string, t *testing.T) (interface{}, error) {
 	type KV struct {
 		K string
 		V string
 	}
-	p := KV{ arg1, arg2 }
-	myRds := cache.GetCache()
+	p := KV{arg1, arg2}
+	myRds := underlying.GetCache()
 	defer myRds.Close()
 
-	key := genKey(serializeValue(p))
+	key := genKey(util.SerializeValue(p))
 
 	exists, err := redis.Bool(myRds.Do("EXISTS", key))
 	if err == nil {
 		Store := func() error {
-			_, err := myRds.Do("SET", key, serializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
+			_, err := myRds.Do("SET", key, util.SerializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
 			t.Log("Set sample data,", "hashKey:", key, "value:", p)
 			return err
 		}
@@ -83,7 +35,7 @@ func TestRedis(arg1 string, arg2 string, t *testing.T) (interface{}, error) {
 			res, err := redis.Bytes(myRds.Do("GET", key))
 			if err != nil { // deserialization failed
 				return nil, err
-			} else if !deserializeValue(res, &p) {
+			} else if !util.DeserializeValue(res, &p) {
 				t.Error("Deserializing failed,", "hashKey:", key)
 			} else {
 				t.Log("Get sample data:", "hashKey:", key, "value:", p)
@@ -104,14 +56,14 @@ func Query1(p interface{}, sql string, args ...interface{}) error {
 	//log.Printf("Query1: %s", sqlargs)
 	log.Printf("Query1: %s", sql)
 
-	myRds := cache.GetCache()
+	myRds := underlying.GetCache()
 	defer myRds.Close()
 
-	myDb := db.GetDB()
+	myDb := underlying.GetDB()
 	//defer myDb.Close()
 
 	sqlargs := append(args, sql)
-	key := genKey(serializeValue(sqlargs))
+	key := genKey(util.SerializeValue(sqlargs))
 
 	exists, err := redis.Bool(myRds.Do("EXISTS", key))
 	if err == nil {
@@ -119,7 +71,7 @@ func Query1(p interface{}, sql string, args ...interface{}) error {
 			if err := myDb.Get(p, sql, args...); err != nil {
 				return err
 			}
-			_, err := myRds.Do("SET", key, serializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
+			_, err := myRds.Do("SET", key, util.SerializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
 			log.Println("No cache found, get from DB...")
 			return err
 		}
@@ -127,7 +79,7 @@ func Query1(p interface{}, sql string, args ...interface{}) error {
 			res, err := redis.Bytes(myRds.Do("GET", key))
 			if err != nil { // deserialization failed, get from DB
 				return getFromDB()
-			} else if !deserializeValue(res, p) {
+			} else if !util.DeserializeValue(res, p) {
 				log.Println("Deserializing failed,", "hashKey:", key)
 				return err
 			} else {
@@ -150,14 +102,14 @@ func QueryN(pp interface{}, sql string, args ...interface{}) error {
 	//log.Printf("QueryN: %s", sqlargs)
 	log.Printf("QueryN: %s", sql)
 
-	myRds := cache.GetCache()
+	myRds := underlying.GetCache()
 	defer myRds.Close()
 
-	myDb := db.GetDB()
+	myDb := underlying.GetDB()
 	//defer myDb.Close()
 
 	sqlargs := append(args, sql)
-	key := genKey(serializeValue(sqlargs))
+	key := genKey(util.SerializeValue(sqlargs))
 
 	exists, err := redis.Bool(myRds.Do("EXISTS", key))
 	if err == nil {
@@ -165,7 +117,7 @@ func QueryN(pp interface{}, sql string, args ...interface{}) error {
 			if err := myDb.Select(pp, sql, args...); err != nil {
 				return err
 			}
-			_, err := myRds.Do("SET", key, serializeValue(pp), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
+			_, err := myRds.Do("SET", key, util.SerializeValue(pp), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
 			log.Println("No cache found, get from DB...")
 			return err
 		}
@@ -173,7 +125,7 @@ func QueryN(pp interface{}, sql string, args ...interface{}) error {
 			res, err := redis.Bytes(myRds.Do("GET", key))
 			if err != nil { // deserialization failed, get from DB
 				return getFromDB()
-			} else if !deserializeValue(res, pp) {
+			} else if !util.DeserializeValue(res, pp) {
 				log.Println("Deserializing failed,", "hashKey:", key)
 				return err
 			} else {
@@ -193,10 +145,30 @@ func Insert(sql string, args ...interface{}) (int64, error) {
 	//log.Println("Insert:", sql, string(m))
 	log.Printf("Insert: %s", sql)
 
-	myDb := db.GetDB()
+	myDb := underlying.GetDB()
 	//defer myDb.Close()
 
 	result, err := myDb.Exec(sql, args...)
+	if err != nil {
+		return 0, err
+	}
+	insId, err := result.LastInsertId()
+	if err != nil {
+		return insId, err
+	}
+	log.Printf("Insert succeed, last id: %d\n", insId)
+	return insId, nil
+}
+
+func NamedInsert(sql string, arg interface{}) (int64, error) {
+	//m, _ := json.Marshal(args)
+	//log.Println("Insert:", sql, string(m))
+	log.Printf("Insert: %s", sql)
+
+	myDb := underlying.GetDB()
+	//defer myDb.Close()
+
+	result, err := myDb.NamedExec(sql, arg)
 	if err != nil {
 		return 0, err
 	}
@@ -213,7 +185,7 @@ func Update(sql string, args ...interface{}) (int64, error) {
 	//log.Println("Update:", sql, string(m))
 	log.Printf("Update: %s", sql)
 
-	myDb := db.GetDB()
+	myDb := underlying.GetDB()
 	//defer myDb.Close()
 
 	result, err := myDb.Exec(sql, args...)
@@ -233,7 +205,7 @@ func Delete(sql string, args ...interface{}) (int64, error) {
 	//log.Println("Delete:", sql, string(m))
 	log.Printf("Delete: %s", sql)
 
-	myDb := db.GetDB()
+	myDb := underlying.GetDB()
 	//defer myDb.Close()
 
 	result, err := myDb.Exec(sql, args...)
@@ -247,4 +219,3 @@ func Delete(sql string, args ...interface{}) (int64, error) {
 	log.Printf("Delete succeed, affected rows: %d\n", rows)
 	return rows, nil
 }
-

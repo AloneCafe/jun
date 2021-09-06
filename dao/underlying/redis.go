@@ -1,4 +1,4 @@
-package cache
+package underlying
 
 import (
 	"github.com/gomodule/redigo/redis"
@@ -7,12 +7,12 @@ import (
 )
 
 func newPool() *redis.Pool {
-	return &redis.Pool {
-		MaxIdle: conf.GetGlobalConfig().Cache.MaxIdle,
-		MaxActive: conf.GetGlobalConfig().Cache.MaxActive,
+	return &redis.Pool{
+		MaxIdle:     conf.GetGlobalConfig().Cache.MaxIdle,
+		MaxActive:   conf.GetGlobalConfig().Cache.MaxActive,
 		IdleTimeout: 240 * time.Second,
-		Wait: true,
-		Dial: func () (redis.Conn, error) {
+		Wait:        true,
+		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial(
 				conf.GetGlobalConfig().Cache.Network,
 				conf.GetGlobalConfig().Cache.RedisServer)
