@@ -13,10 +13,12 @@ type GlobalHttpsConfig struct {
 }
 
 type GlobalWebConfig struct {
-	BindAddr   string            `json:"BindAddr"`
-	BindPort   int               `json:"BindPort"`
-	ServerName string            `json:"ServerName"`
-	HTTPS      GlobalHttpsConfig `json:"HTTPS"`
+	BindAddr        string            `json:"BindAddr"`
+	BindPort        int               `json:"BindPort"`
+	ServerName      string            `json:"ServerName"`
+	HTTPS           GlobalHttpsConfig `json:"HTTPS"`
+	TokenExpiredMin int64             `json:"TokenExpiredMin"`
+	TokenSecretSalt string            `json:"TokenSecretSalt"`
 }
 
 type GlobalDbConfig struct {
@@ -36,14 +38,14 @@ type GlobalCacheConfig struct {
 }
 
 type GlobalConfig struct {
-	Web GlobalWebConfig     `json:"Web"`
-	Db  GlobalDbConfig      `json:"Db"`
+	Web   GlobalWebConfig   `json:"Web"`
+	Db    GlobalDbConfig    `json:"Db"`
 	Cache GlobalCacheConfig `json:"Cache"`
 }
 
 var (
 	file = "../config.json"
-	g GlobalConfig
+	g    GlobalConfig
 )
 
 func GetGlobalConfig() *GlobalConfig {

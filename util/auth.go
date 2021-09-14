@@ -1,9 +1,8 @@
-package auth
+package util
 
 import (
 	"errors"
 	"jun/model/user"
-	"jun/util"
 )
 
 func Login(username string, password string) (bool, string, error) {
@@ -12,11 +11,11 @@ func Login(username string, password string) (bool, string, error) {
 	if err != nil {
 		return false, "", err
 	} else if !ok {
-		return false, "", errors.New("用户名或密码错误")
+		return false, "", errors.New("用户验证错误")
 	}
 
 	// 验证成功，生成 JWT
-	token, err := util.NewJwtTokenByUid(id, username, password)
+	token, err := NewJwtTokenByUid(id, username, password)
 	if err != nil {
 		return false, "", err
 	}
@@ -26,22 +25,22 @@ func Login(username string, password string) (bool, string, error) {
 
 func Logout(token string) {
 	// 直接加入黑名单
-	banToken(token)
+	BanToken(token)
 }
 
-func Check(token string) (*util.WebClaims, error) {
+func Check(token string) (*WebClaims, error) {
 	// 验证 JWT 是否在 blacklist 中（是否已注销）
-	if isTokenBanned(token) {
+	if IsTokenBanned(token) {
 		return nil, errors.New("授权凭据已注销，请重新登录")
 	}
 
 	// 解密并且验证 JWT 是否过期
-	var claim *util.WebClaims
-	jwt, err := util.ParseJwtToken(token)
+	var claim *WebClaims
+	jwt, err := ParseJwtToken(token)
 	if err == nil && jwt != nil {
 		if !jwt.Valid {
 			return nil, errors.New("授权凭据已过期，请重新登录")
-		} else if c, ok := jwt.Claims.(*util.WebClaims); ok {
+		} else if c, ok := jwt.Claims.(*WebClaims); ok {
 			claim = c
 		}
 	} else {

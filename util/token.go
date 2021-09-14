@@ -1,18 +1,18 @@
-package auth
+package util
 
 var (
 	blacklist map[string]int
 )
 
-func banToken(token string) {
+func BanToken(token string) {
 	blacklist[token] = 1
 }
 
-func allowToken(token string) {
+func AllowToken(token string) {
 	delete(blacklist, token)
 }
 
-func isTokenBanned(token string) bool {
+func IsTokenBanned(token string) bool {
 	return blacklist[token] == 1
 }
 

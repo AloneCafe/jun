@@ -104,17 +104,19 @@ var (
 )
 
 func init() {
-	setController("/users/current", &ReqController{
-		ConnectHandler: nil,
-		DeleteHandler:  cDeleteUserCurr(),
-		GetHandler:     cGetUserCurr(),
-		HeadHandler:    nil,
-		OptionsHandler: nil,
-		PatchHandler:   nil,
-		PostHandler:    nil,
-		PutHandler:     cUpdateUserCurr(),
-		TraceHandler:   nil,
-	})
+	/*
+		setController("/users/current", &ReqController{
+			ConnectHandler: nil,
+			DeleteHandler:  cDeleteUserCurr(),
+			GetHandler:     cGetUserCurr(),
+			HeadHandler:    nil,
+			OptionsHandler: nil,
+			PatchHandler:   nil,
+			PostHandler:    nil,
+			PutHandler:     cUpdateUserCurr(),
+			TraceHandler:   nil,
+		})
+	*/
 
 	setController("/users", &ReqController{
 		ConnectHandler: nil,
