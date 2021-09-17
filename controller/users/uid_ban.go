@@ -92,7 +92,6 @@ func (p *UsersUidBanController) PostHandler() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest,
 				dto.NewResult(false, "参数不正确", nil))
 		} else {
-			aid++
 			if aid == id {
 				c.JSON(http.StatusBadRequest,
 					dto.NewResult(false, fmt.Sprintf("无法封禁自身（管理员用户），id = %d", id), nil))
