@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func Login(username string, password string) (bool, string, error) {
+func Login(username string, password string, ipaddr string) (bool, string, error) {
 	// 先通过 Model 层验证用户名密码
 	ok, id, err := user.AuthGetUid(&username, &password)
 	if err != nil {
@@ -26,7 +26,7 @@ func Login(username string, password string) (bool, string, error) {
 	}
 
 	// 验证成功，生成 JWT
-	token, err := util.NewJwtTokenByUid(id, username, password)
+	token, err := util.NewJwtTokenByUid(id, username, password, ipaddr)
 	if err != nil {
 		return false, "", err
 	}

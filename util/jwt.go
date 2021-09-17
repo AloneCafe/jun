@@ -12,9 +12,11 @@ type WebClaims struct {
 	UID   int64  `json:"u_id"`
 	Uname string `json:"u_uname"`
 	Pwd   string `json:"u_pwd"`
+
+	IPAddr string `json:"u_ipaddr"`
 }
 
-func NewJwtTokenByUid(id int64, uname string, pwd string) (string, error) {
+func NewJwtTokenByUid(id int64, uname string, pwd string, ipaddr string) (string, error) {
 	now := time.Now().Unix()
 	idStr := strconv.FormatInt(id, 10)
 	claims := WebClaims{
@@ -27,9 +29,10 @@ func NewJwtTokenByUid(id int64, uname string, pwd string) (string, error) {
 			NotBefore: now,
 			Subject:   "login with user authorization",
 		},
-		UID:   id,
-		Uname: uname,
-		Pwd:   pwd,
+		UID:    id,
+		Uname:  uname,
+		Pwd:    pwd,
+		IPAddr: ipaddr,
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

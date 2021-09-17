@@ -147,7 +147,7 @@ func TestInsert(t *testing.T) {
 
 func TestTokenGen(t *testing.T) {
 	func() {
-		token, err := util.NewJwtTokenByUid(1, "admin", "admin")
+		token, err := util.NewJwtTokenByUid(1, "admin", "admin", "127.0.0.1")
 		if err != nil {
 			t.Error(err)
 		}
