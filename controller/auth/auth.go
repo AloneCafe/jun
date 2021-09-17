@@ -10,7 +10,7 @@ import (
 )
 
 type AuthController struct {
-	base.IBasicController
+	//base.IBasicController
 }
 
 func (*AuthController) DeleteHandler() gin.HandlerFunc {

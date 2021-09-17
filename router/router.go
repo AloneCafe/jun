@@ -9,7 +9,10 @@ import (
 	"jun/controller/base"
 	"jun/dto"
 	"jun/router/middleware"
+	"jun/util"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func Setup() {
@@ -24,11 +27,23 @@ func Setup() {
 	// Recovery 中间件会 recover 任何 panic。如果有 panic 的话，会写入 500
 	r.Use(middleware.Recovery())
 
-	v0 := r.Group("/v0")
+	r.Any("/ip", func(c *gin.Context) {
+		c.String(http.StatusOK, c.ClientIP())
+	})
 
-	v0.Use(middleware.ServerName())
-	v0.Use(middleware.CORS())
-	v0.Use(gzip.Gzip(gzip.DefaultCompression))
+	r.Any("/timestamp", func(c *gin.Context) {
+		c.String(http.StatusOK, strconv.FormatInt(time.Now().Unix(), 10))
+	})
+
+	r.Any("/version", func(c *gin.Context) {
+		c.String(http.StatusOK, util.GetApiVer())
+	})
+
+	rest := r.Group("/" + util.GetApiVer())
+
+	rest.Use(middleware.ServerName())
+	rest.Use(middleware.CORS())
+	rest.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	bcs := base.GetBasicControllers()
 	for _, c := range *bcs {
@@ -38,16 +53,16 @@ func Setup() {
 		fdelete := c.IBasicController.DeleteHandler()
 
 		if fget != nil {
-			v0.GET(string(c.ReqPoint), fget)
+			rest.GET(string(c.ReqPoint), fget)
 		}
 		if fpost != nil {
-			v0.POST(string(c.ReqPoint), fpost)
+			rest.POST(string(c.ReqPoint), fpost)
 		}
 		if fput != nil {
-			v0.PUT(string(c.ReqPoint), fput)
+			rest.PUT(string(c.ReqPoint), fput)
 		}
 		if fdelete != nil {
-			v0.DELETE(string(c.ReqPoint), fdelete)
+			rest.DELETE(string(c.ReqPoint), fdelete)
 		}
 	}
 
