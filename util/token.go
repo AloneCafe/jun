@@ -1,7 +1,7 @@
 package util
 
 var (
-	blacklist map[string]int
+	blacklist = make(map[string]int)
 )
 
 func BanToken(token string) {

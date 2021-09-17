@@ -29,7 +29,7 @@ func GetRoleById(id int64) (*dto.UserRole, error) {
 	if err != nil {
 		return nil, err
 	} else {
-		return p.Role, nil
+		return &p.Role, nil
 	}
 }
 
@@ -58,9 +58,9 @@ func AuthGetUid(uname *string, pwd *string) (bool, int64, error) {
 }
 
 func Add(email, uname, pwd, desc *string,
-	thumbnails *string, sex *dto.UserSex,
+	thumbnails *string, sex dto.UserSex,
 	birth *time.Time, tel *string,
-	role *dto.UserRole) (int64, error) {
+	role dto.UserRole) (int64, error) {
 
 	if email == nil || *email == "" {
 		return 0, errors.New("电子邮件不能为空")
@@ -77,10 +77,34 @@ func DeleteById(id int64) (int64, error) {
 	return deleteById(id)
 }
 
-func UpdateBasicInfo(p *dto.User) (int64, error) {
+// UpdateBasicInfo 更新除了 Role 和 ID 以外的字段
+func UpdateBasicInfo(p *dto.UserInfoBasicUpdate) (int64, error) {
 	return updateBasicInfo(p)
 }
 
-func UpdateAllInfo(p *dto.User) (int64, error) {
+// UpdateAllInfo 更新除了 ID 以外的字段
+func UpdateAllInfo(p *dto.UserInfoAllUpdate) (int64, error) {
 	return updateAllInfo(p)
+}
+
+func IsUserBannedById(id int64) (bool, error) {
+	return isUserBannedById(id)
+}
+
+func BanUserById(id int64) (int64, error) {
+	return banUserById(id)
+}
+
+func UnbanUserById(id int64) (int64, error) {
+	return unbanUserById(id)
+}
+
+func DeleteAllBanned() (int64, error) {
+	return deleteAllBanned()
+}
+
+func GetAllBanned() (*[]dto.User, error) {
+	pp := new([]dto.User)
+	err := selectAllBanned(pp)
+	return pp, err
 }

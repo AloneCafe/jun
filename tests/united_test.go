@@ -7,6 +7,7 @@ import (
 	"jun/conf"
 	"jun/dao"
 	"jun/model/user"
+	"jun/util"
 	"strconv"
 	"testing"
 )
@@ -135,11 +136,30 @@ func TestInsert(t *testing.T) {
 		email := "admin@example.com"
 		uname := "admin"
 		pwd := "admin"
-		insId, err := user.Add(&email, &uname, &pwd, nil, nil, nil, nil, nil, nil)
+		insId, err := user.Add(&email, &uname, &pwd, nil, nil, 0, nil, nil, 0)
 		if err != nil {
 			t.Error("Add user failed", err)
 		} else {
 			t.Log("Add user successful, last insert id:", insId)
 		}
+	}()
+}
+
+func TestTokenGen(t *testing.T) {
+	func() {
+		token, err := util.NewJwtTokenByUid(1, "admin", "admin")
+		if err != nil {
+			t.Error(err)
+		}
+
+		jwtToken, err := util.ParseJwtToken(token)
+		if err != nil {
+			t.Error("Token generation test failed,", err)
+			return
+		} else if !jwtToken.Valid {
+			t.Error("Token generation test failed,", "token is invalid")
+			return
+		}
+
 	}()
 }

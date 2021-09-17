@@ -44,7 +44,7 @@ type GlobalConfig struct {
 }
 
 var (
-	file = "../config.json"
+	file = "config.json"
 	g    GlobalConfig
 )
 
