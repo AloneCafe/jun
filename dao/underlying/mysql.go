@@ -3,7 +3,7 @@ package underlying
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"jun/conf"
+	"jun/utils/conf"
 	"log"
 )
 

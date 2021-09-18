@@ -2,15 +2,16 @@ package dao
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"jun/conf"
 	"jun/dao/underlying"
-	"jun/util"
+	"jun/utils/binary"
+	"jun/utils/conf"
+	"jun/utils/hash"
 	"log"
 	"testing"
 )
 
 var (
-	genKey = util.Key1
+	genKey = hash.Key1
 )
 
 func TestRedis(arg1 string, arg2 string, t *testing.T) (interface{}, error) {
@@ -22,12 +23,12 @@ func TestRedis(arg1 string, arg2 string, t *testing.T) (interface{}, error) {
 	myRds := underlying.GetCache()
 	defer myRds.Close()
 
-	key := genKey(util.SerializeValue(p))
+	key := genKey(binary.SerializeValue(p))
 
 	exists, err := redis.Bool(myRds.Do("EXISTS", key))
 	if err == nil {
 		Store := func() error {
-			_, err := myRds.Do("SET", key, util.SerializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
+			_, err := myRds.Do("SET", key, binary.SerializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
 			t.Log("Set sample data,", "hashKey:", key, "value:", p)
 			return err
 		}
@@ -35,7 +36,7 @@ func TestRedis(arg1 string, arg2 string, t *testing.T) (interface{}, error) {
 			res, err := redis.Bytes(myRds.Do("GET", key))
 			if err != nil { // deserialization failed
 				return nil, err
-			} else if !util.DeserializeValue(res, &p) {
+			} else if !binary.DeserializeValue(res, &p) {
 				t.Error("Deserializing failed,", "hashKey:", key)
 			} else {
 				t.Log("Get sample data:", "hashKey:", key, "value:", p)
@@ -63,7 +64,7 @@ func Query1(p interface{}, sql string, args ...interface{}) error {
 	//defer myDb.Close()
 
 	sqlargs := append(args, sql)
-	key := genKey(util.SerializeValue(sqlargs))
+	key := genKey(binary.SerializeValue(sqlargs))
 
 	exists, err := redis.Bool(myRds.Do("EXISTS", key))
 	if err == nil {
@@ -71,7 +72,7 @@ func Query1(p interface{}, sql string, args ...interface{}) error {
 			if err := myDb.Get(p, sql, args...); err != nil {
 				return err
 			}
-			_, err := myRds.Do("SET", key, util.SerializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
+			_, err := myRds.Do("SET", key, binary.SerializeValue(p), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
 			log.Println("No cache found, get from DB...")
 			return err
 		}
@@ -79,7 +80,7 @@ func Query1(p interface{}, sql string, args ...interface{}) error {
 			res, err := redis.Bytes(myRds.Do("GET", key))
 			if err != nil { // deserialization failed, get from DB
 				return getFromDB()
-			} else if !util.DeserializeValue(res, p) {
+			} else if !binary.DeserializeValue(res, p) {
 				log.Println("Deserializing failed,", "hashKey:", key)
 				return err
 			} else {
@@ -109,7 +110,7 @@ func QueryN(pp interface{}, sql string, args ...interface{}) error {
 	//defer myDb.Close()
 
 	sqlargs := append(args, sql)
-	key := genKey(util.SerializeValue(sqlargs))
+	key := genKey(binary.SerializeValue(sqlargs))
 
 	exists, err := redis.Bool(myRds.Do("EXISTS", key))
 	if err == nil {
@@ -117,7 +118,7 @@ func QueryN(pp interface{}, sql string, args ...interface{}) error {
 			if err := myDb.Select(pp, sql, args...); err != nil {
 				return err
 			}
-			_, err := myRds.Do("SET", key, util.SerializeValue(pp), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
+			_, err := myRds.Do("SET", key, binary.SerializeValue(pp), "PX", conf.GetGlobalConfig().Cache.CacheLifeMs)
 			log.Println("No cache found, get from DB...")
 			return err
 		}
@@ -125,7 +126,7 @@ func QueryN(pp interface{}, sql string, args ...interface{}) error {
 			res, err := redis.Bytes(myRds.Do("GET", key))
 			if err != nil { // deserialization failed, get from DB
 				return getFromDB()
-			} else if !util.DeserializeValue(res, pp) {
+			} else if !binary.DeserializeValue(res, pp) {
 				log.Println("Deserializing failed,", "hashKey:", key)
 				return err
 			} else {

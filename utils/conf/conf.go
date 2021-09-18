@@ -37,14 +37,20 @@ type GlobalCacheConfig struct {
 	CacheLifeMs int    `json:"CacheLifeMs"`
 }
 
+type GlobalOtherConfig struct {
+	IPBLFile     string `json:"IPBLFile"`
+	ReqHdrBLFile string `json:"ReqHdrBLFile"`
+}
+
 type GlobalConfig struct {
-	Web   GlobalWebConfig   `json:"Web"`
-	Db    GlobalDbConfig    `json:"Db"`
-	Cache GlobalCacheConfig `json:"Cache"`
+	Web         GlobalWebConfig   `json:"Web"`
+	Db          GlobalDbConfig    `json:"Db"`
+	Cache       GlobalCacheConfig `json:"Cache"`
+	OtherConfig GlobalOtherConfig `json:"OtherConfig"`
 }
 
 var (
-	file = "config.json"
+	file = "./config/config.json"
 	g    GlobalConfig
 )
 

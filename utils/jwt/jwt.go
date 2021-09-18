@@ -1,8 +1,8 @@
-package util
+package jwt
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"jun/conf"
+	"jun/utils/conf"
 	"strconv"
 	"time"
 )

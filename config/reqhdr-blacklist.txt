@@ -1,0 +1,8 @@
+# These lines will be ignored, please write rules below
+# For example, ban all User-Agent:
+# (?i)User-Agent    .*
+#
+# Another example, ban which contains "Android" (case-insensitive):
+# (?i)User-Agent    (?i)Android
+
+(?i)User-Agent  (?i)spider

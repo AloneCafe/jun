@@ -1,4 +1,4 @@
-package util
+package utils
 
 var (
 	apiver string = "v0"

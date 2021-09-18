@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"jun/dto"
 	"jun/model/user"
-	"jun/util"
+	"jun/utils/jwt"
 	"net/http"
 	"strings"
 )
@@ -26,7 +26,7 @@ func Login(username string, password string, ipaddr string) (bool, string, error
 	}
 
 	// 验证成功，生成 JWT
-	token, err := util.NewJwtTokenByUid(id, username, password, ipaddr)
+	token, err := jwt.NewJwtTokenByUid(id, username, password, ipaddr)
 	if err != nil {
 		return false, "", err
 	}
@@ -36,22 +36,22 @@ func Login(username string, password string, ipaddr string) (bool, string, error
 
 func Logout(token string) {
 	// 直接加入黑名单
-	util.BanToken(token)
+	jwt.BanToken(token)
 }
 
-func Check(token string) (*util.WebClaims, error) {
+func Check(token string) (*jwt.WebClaims, error) {
 	// 验证 JWT 是否在 blacklist 中（是否已注销）
-	if util.IsTokenBanned(token) {
+	if jwt.IsTokenBanned(token) {
 		return nil, errors.New("授权凭据已注销，请重新登录")
 	}
 
 	// 解密并且验证 JWT 是否过期
-	var claim *util.WebClaims
-	jwt, err := util.ParseJwtToken(token)
-	if err == nil && jwt != nil {
-		if !jwt.Valid {
+	var claim *jwt.WebClaims
+	tk, err := jwt.ParseJwtToken(token)
+	if err == nil && tk != nil {
+		if !tk.Valid {
 			return nil, errors.New("授权凭据已过期，请重新登录")
-		} else if c, ok := jwt.Claims.(*util.WebClaims); ok {
+		} else if c, ok := tk.Claims.(*jwt.WebClaims); ok {
 			claim = c
 		}
 	} else {
@@ -95,7 +95,7 @@ func GetBearerToken(c *gin.Context) (token *string, e error) {
 	return
 }
 
-func Authorization(c *gin.Context, lowRole dto.UserRole) (wc *util.WebClaims, e error) {
+func Authorization(c *gin.Context, lowRole dto.UserRole) (wc *jwt.WebClaims, e error) {
 	wc = nil
 	e = nil
 	if lowRole <= dto.U_ROLE_VISITOR {

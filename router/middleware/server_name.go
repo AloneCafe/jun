@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"jun/conf"
+	"jun/utils/conf"
 )
 
 func ServerName() gin.HandlerFunc {

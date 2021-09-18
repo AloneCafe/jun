@@ -1,4 +1,4 @@
-package util
+package jwt
 
 var (
 	blacklist = make(map[string]int)

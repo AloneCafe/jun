@@ -1,0 +1,2 @@
+# This line will be ignored, please write IP address which you wanna to ban below
+

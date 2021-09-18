@@ -3,6 +3,7 @@ package user
 import (
 	"jun/dao"
 	"jun/dto"
+	"jun/utils/dexss"
 	"time"
 )
 
@@ -71,6 +72,12 @@ func add(email, uname, pwd, desc *string,
 	       ifnull(?, 0),
 	       now(), now())`
 
+	dexss.SimpleText(email)
+	dexss.SimpleText(uname)
+	//dexss.SimpleText(pwd) // password 一般不会被发回，所以无需防御 XSS
+	dexss.SimpleText(desc)
+	dexss.SimpleText(tel)
+
 	return dao.Insert(sql, email, uname, pwd, desc, thumbnails, sex, birth, tel, role)
 }
 
@@ -82,12 +89,26 @@ func deleteById(id int64) (int64, error) {
 func updateBasicInfo(p *dto.UserInfoBasicUpdate) (int64, error) {
 	sql := `update user set u_email = ?, u_uname = ?, u_pwd_encrypted = sha1(concat(?, 'jun990527')), u_desc = ?, 
            u_thumbnails = ?, u_sex = ?, u_birth = ?, u_tel = ?, u_active_time = now() where u_id = ?`
+
+	dexss.SimpleText(p.Email)
+	dexss.SimpleText(p.Uname)
+	//dexss.SimpleText(p.Pwd) // password 一般不会被发回，所以无需防御 XSS
+	dexss.SimpleText(p.Desc)
+	dexss.SimpleText(p.Tel)
+
 	return dao.Update(sql, p.Email, p.Uname, p.Pwd, p.Desc, p.Thumbnails, p.Sex, p.Birth, p.Tel, p.IDReadOnly)
 }
 
 func updateAllInfo(p *dto.UserInfoAllUpdate) (int64, error) {
 	sql := `update user set u_email = ?, u_uname = ?, u_pwd_encrypted = sha1(concat(?, 'jun990527')), u_desc = ?, 
            u_thumbnails = ?, u_sex = ?, u_birth = ?, u_tel = ?, u_active_time = now(), u_role = ? where u_id = ?`
+
+	dexss.SimpleText(p.Email)
+	dexss.SimpleText(p.Uname)
+	//dexss.SimpleText(p.Pwd) // password 一般不会被发回，所以无需防御 XSS
+	dexss.SimpleText(p.Desc)
+	dexss.SimpleText(p.Tel)
+
 	return dao.Update(sql, p.Email, p.Uname, p.Pwd, p.Desc, p.Thumbnails, p.Sex, p.Birth, p.Tel, p.Role, p.IDReadOnly)
 }
 

@@ -24,5 +24,9 @@
         "MaxActive": 1000,
         "MaxIdle": 100,
         "CacheLifeMs": 10000
+    },
+    "OtherConfig": {
+        "IPBLFile": "./config/ip-blacklist.txt",
+        "ReqHdrBLFile": "./config/reqhdr-blacklist.txt"
     }
 }

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"jun/conf"
 	"jun/dao"
 	"jun/model/user"
-	"jun/util"
+	"jun/utils/conf"
+	"jun/utils/jwt"
 	"strconv"
 	"testing"
 )
@@ -147,12 +147,12 @@ func TestInsert(t *testing.T) {
 
 func TestTokenGen(t *testing.T) {
 	func() {
-		token, err := util.NewJwtTokenByUid(1, "admin", "admin", "127.0.0.1")
+		token, err := jwt.NewJwtTokenByUid(1, "admin", "admin", "127.0.0.1")
 		if err != nil {
 			t.Error(err)
 		}
 
-		jwtToken, err := util.ParseJwtToken(token)
+		jwtToken, err := jwt.ParseJwtToken(token)
 		if err != nil {
 			t.Error("Token generation test failed,", err)
 			return

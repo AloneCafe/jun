@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"jun/controller/base"
 	"jun/dto"
-	"jun/util"
+	"jun/utils/jwt"
 	"log"
 	"net/http"
 )
@@ -28,7 +28,7 @@ func (*AuthController) DeleteHandler() gin.HandlerFunc {
 				return
 			}
 
-			util.BanToken(*token)
+			jwt.BanToken(*token)
 			c.JSON(http.StatusOK,
 				dto.NewResult(true, "授权已注销", nil))
 		}

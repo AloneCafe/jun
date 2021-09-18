@@ -2,7 +2,7 @@ package underlying
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"jun/conf"
+	"jun/utils/conf"
 	"time"
 )
 
