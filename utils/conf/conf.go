@@ -38,8 +38,7 @@ type GlobalCacheConfig struct {
 }
 
 type GlobalOtherConfig struct {
-	IPBLFile     string `json:"IPBLFile"`
-	ReqHdrBLFile string `json:"ReqHdrBLFile"`
+	IPBLFile string `json:"IPBLFile"`
 }
 
 type GlobalConfig struct {

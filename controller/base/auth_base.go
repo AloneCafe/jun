@@ -66,7 +66,7 @@ func Check(token string) (*jwt.WebClaims, error) {
 		return nil, errors.New("授权凭据已更改，请重新登录")
 	}
 
-	// 验证 JWT 中附带的 ID
+	// 验证 JWT 中附带的 UID
 	if id != claim.UID {
 		return nil, errors.New("授权凭据已更改，请重新登录")
 	}

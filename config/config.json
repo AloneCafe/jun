@@ -26,7 +26,8 @@
         "CacheLifeMs": 10000
     },
     "OtherConfig": {
-        "IPBLFile": "./config/ip-blacklist.txt",
-        "ReqHdrBLFile": "./config/reqhdr-blacklist.txt"
+        "IPBLFile": [
+            "./config/ip-blacklist.txt"
+        ]
     }
 }

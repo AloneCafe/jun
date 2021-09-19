@@ -16,11 +16,11 @@ func selectById(p *dto.User, id *int64) error {
 }
 
 func selectByUname(p *dto.User, uname *string) error {
-	return dao.Query1(p, "select * from user where u_uname = ? limit 1", uname)
+	return dao.Query1(p, "select * from user where binary u_uname = ? limit 1", uname)
 }
 
 func selectByEmail(p *dto.User, email *string) error {
-	return dao.Query1(p, "select * from user where u_email = ? limit 1", email)
+	return dao.Query1(p, "select * from user where binary u_email = ? limit 1", email)
 }
 
 func selectAll(pp *[]dto.User) error {
@@ -34,7 +34,7 @@ func countAll(cnt *uint64) error {
 func auth(b *bool, uname *string, pwd *string) error {
 	sql :=
 		`select count(u_id) from user
-	where u_uname = ? and u_pwd_encrypted = sha1(concat(?, 'jun990527'))`
+	where binary u_uname = ? and binary u_pwd_encrypted = sha1(concat(?, 'jun990527'))`
 
 	return dao.Query1(b, sql, uname, pwd)
 }
@@ -49,7 +49,7 @@ func authGetUid(id *int64, uname *string, pwd *string) (bool, error) {
 	} else {
 		sql :=
 			`select u_id from user
-	where u_uname = ? and u_pwd_encrypted = sha1(concat(?, 'jun990527'))`
+	where binary u_uname = ? and binary u_pwd_encrypted = sha1(concat(?, 'jun990527'))`
 		err := dao.Query1(id, sql, uname, pwd)
 		return err == nil, err
 	}

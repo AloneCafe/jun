@@ -77,12 +77,12 @@ func DeleteById(id int64) (int64, error) {
 	return deleteById(id)
 }
 
-// UpdateBasicInfo 更新除了 Role 和 ID 以外的字段
+// UpdateBasicInfo 更新除了 Role 和 UID 以外的字段
 func UpdateBasicInfo(p *dto.UserInfoBasicUpdate) (int64, error) {
 	return updateBasicInfo(p)
 }
 
-// UpdateAllInfo 更新除了 ID 以外的字段
+// UpdateAllInfo 更新除了 UID 以外的字段
 func UpdateAllInfo(p *dto.UserInfoAllUpdate) (int64, error) {
 	return updateAllInfo(p)
 }

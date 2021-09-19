@@ -24,7 +24,7 @@ const (
 )
 
 type User struct {
-	ID           int64      `json:"u_id"            db:"u_id"`
+	UID          int64      `json:"u_id"            db:"u_id"`
 	Email        *string    `json:"u_email"         db:"u_email"`
 	Uname        *string    `json:"u_uname"         db:"u_uname"`
 	PwdEncrypted *string    `json:"u_pwd_encrypted" db:"u_pwd_encrypted"`

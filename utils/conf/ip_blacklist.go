@@ -1,27 +1,28 @@
 package conf
 
 import (
-	"jun/utils/binary"
 	"os"
 	"strings"
 	"sync"
+
+	"jun/utils/binary"
 )
 
 var (
-	m        sync.Mutex
+	mIP      sync.Mutex
 	ipBL     = make(map[string]bool)
 	ipBLFile = GetGlobalConfig().OtherConfig.IPBLFile
 )
 
 func BanIP(ip string) {
-	m.Lock()
-	defer m.Unlock()
+	mIP.Lock()
+	defer mIP.Unlock()
 	ipBL[ip] = true
 }
 
 func AllowIP(ip string) {
-	m.Lock()
-	defer m.Unlock()
+	mIP.Lock()
+	defer mIP.Unlock()
 	ipBL[ip] = false
 }
 
@@ -29,10 +30,10 @@ func IsIPBanned(ip string) bool {
 	return ipBL[ip]
 }
 
-func GetBL() (string, error) {
-	m.Lock()
-	defer m.Unlock()
-	err := sync2BLFile()
+func GetIPBL() (string, error) {
+	mIP.Lock()
+	defer mIP.Unlock()
+	err := sync2IPBLFile()
 	if err != nil {
 		return "", err
 	}
@@ -45,15 +46,15 @@ func GetBL() (string, error) {
 	return string(data), nil
 }
 
-func SetBL(ipbl string) error {
-	m.Lock()
-	defer m.Unlock()
+func SetIPBL(ipbl string) error {
+	mIP.Lock()
+	defer mIP.Unlock()
 	err := os.WriteFile(ipBLFile, []byte(ipbl), 0666)
 	if err != nil {
 		return err
 	}
 
-	err = loadFromBLFile()
+	err = loadFromIPBLFile()
 	if err != nil {
 		return err
 	}
@@ -62,13 +63,13 @@ func SetBL(ipbl string) error {
 }
 
 func init() {
-	err := loadFromBLFile()
+	err := loadFromIPBLFile()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func loadFromBLFile() error {
+func loadFromIPBLFile() error {
 	data, err := os.ReadFile(ipBLFile)
 	if err != nil {
 		return err
@@ -84,7 +85,7 @@ func loadFromBLFile() error {
 	return nil
 }
 
-func sync2BLFile() error {
+func sync2IPBLFile() error {
 	var buf []byte
 	for k, v := range ipBL {
 		if v {
