@@ -12,13 +12,13 @@
         "TokenSecretSalt": "Dev4AloneCafe980918!"
     },
     "Db": {
-        "DSN": "root:root@tcp(192.168.1.2:3306)/jun?parseTime=true",
+        "DSN": "alon:alon@tcp(127.0.0.1:3306)/jun?parseTime=true",
         "MaxOpenConn": 1000,
         "MaxIdleConn": 100
     },
     "Cache": {
         "Network": "tcp",
-        "RedisServer": "192.168.1.2:6379",
+        "RedisServer": "127.0.0.1:6379",
         "Auth": "password",
         "SelectNo": 0,
         "MaxActive": 1000,
@@ -26,8 +26,6 @@
         "CacheLifeMs": 10000
     },
     "OtherConfig": {
-        "IPBLFile": [
-            "./config/ip-blacklist.txt"
-        ]
+        "IPBLFile": "../config/ip-blacklist.txt"
     }
 }

@@ -2,8 +2,10 @@ package conf
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 )
 
 type GlobalHttpsConfig struct {
@@ -49,7 +51,7 @@ type GlobalConfig struct {
 }
 
 var (
-	file = "./config/config.json"
+	file = "../config/config.json"
 	g    GlobalConfig
 )
 
@@ -66,6 +68,8 @@ func json2GlobalConfig(b []byte, gc *GlobalConfig) (string, bool) {
 }
 
 func init() {
+	d, err := os.Getwd()
+	fmt.Println(d)
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Panicln("Cannot read configuration file '" + file + "'")

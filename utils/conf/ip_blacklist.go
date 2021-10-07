@@ -9,9 +9,8 @@ import (
 )
 
 var (
-	mIP      sync.Mutex
-	ipBL     = make(map[string]bool)
-	ipBLFile = GetGlobalConfig().OtherConfig.IPBLFile
+	mIP  sync.Mutex
+	ipBL = make(map[string]bool)
 )
 
 func BanIP(ip string) {
@@ -38,7 +37,7 @@ func GetIPBL() (string, error) {
 		return "", err
 	}
 
-	data, err := os.ReadFile(ipBLFile)
+	data, err := os.ReadFile(GetGlobalConfig().OtherConfig.IPBLFile)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +48,7 @@ func GetIPBL() (string, error) {
 func SetIPBL(ipbl string) error {
 	mIP.Lock()
 	defer mIP.Unlock()
-	err := os.WriteFile(ipBLFile, []byte(ipbl), 0666)
+	err := os.WriteFile(GetGlobalConfig().OtherConfig.IPBLFile, []byte(ipbl), 0666)
 	if err != nil {
 		return err
 	}
@@ -70,7 +69,7 @@ func init() {
 }
 
 func loadFromIPBLFile() error {
-	data, err := os.ReadFile(ipBLFile)
+	data, err := os.ReadFile(GetGlobalConfig().OtherConfig.IPBLFile)
 	if err != nil {
 		return err
 	}
@@ -92,7 +91,7 @@ func sync2IPBLFile() error {
 			buf = binary.BytesMerge(buf, []byte(k+"\n"))
 		}
 	}
-	err := os.WriteFile(ipBLFile, buf, 0666)
+	err := os.WriteFile(GetGlobalConfig().OtherConfig.IPBLFile, buf, 0666)
 	if err != nil {
 		return err
 	}

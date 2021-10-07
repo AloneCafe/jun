@@ -2,14 +2,14 @@ package tests
 
 import (
 	"encoding/json"
+	"strconv"
+	"testing"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"jun/dao"
-	"jun/model/user"
+	"jun/model/post"
 	"jun/utils/conf"
-	"jun/utils/jwt"
-	"strconv"
-	"testing"
 )
 
 func TestGlobalConfig(t *testing.T) {
@@ -59,6 +59,22 @@ func TestRedisConn(t *testing.T) {
 	}()
 }
 
+func TestFindPost(t *testing.T) {
+	func() {
+		pp, err := post.FindPost("7", ".*", ".*", 1, 0)
+		if err != nil {
+			t.Error(err)
+		} else {
+			s, err := json.Marshal(pp)
+			if err != nil {
+				t.Error(err)
+			}
+			t.Log(string(s))
+		}
+	}()
+}
+
+/*
 func TestGetUser(t *testing.T) {
 	func() {
 		const uid = 0
@@ -163,3 +179,4 @@ func TestTokenGen(t *testing.T) {
 
 	}()
 }
+*/

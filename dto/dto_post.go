@@ -44,7 +44,10 @@ type Post struct {
 	Thumbnails *string    `json:"p_thumbnails" db:"p_thumbnails"`
 }
 
-type PostCompleted struct {
+type PostDetail struct {
 	Post
-	User
+	LikeCount    int64 `json:"p_like_cnt" db:"p_like_cnt"`
+	UnlikeCount  int64 `json:"p_unlike_cnt" db:"p_unlike_cnt"`
+	CommentCount int64 `json:"p_comment_cnt" db:"p_comment_cnt"`
+	StarCount    int64 `json:"p_star_cnt" db:"p_star_cnt"`
 }
