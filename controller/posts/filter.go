@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"jun/controller/base"
 	"jun/dto"
 	"jun/model/option"
 	"jun/model/post"
@@ -20,6 +21,10 @@ func (p *MatchListController) DeleteHandler() gin.HandlerFunc {
 
 func (p *MatchListController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if _, err := base.Authorization(c, p.LowestRole); err != nil {
+			return
+		}
+
 		match := c.Param("match")
 		pageIndex := c.Param("pageIndex")
 		if match == "" { //
