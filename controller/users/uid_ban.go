@@ -10,11 +10,11 @@ import (
 	"strconv"
 )
 
-type UsersUidBanController struct {
+type UidBanController struct {
 	LowestRole dto.UserRole
 }
 
-func (p *UsersUidBanController) DeleteHandler() gin.HandlerFunc {
+func (p *UidBanController) DeleteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -50,7 +50,7 @@ func (p *UsersUidBanController) DeleteHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersUidBanController) GetHandler() gin.HandlerFunc {
+func (p *UidBanController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -78,7 +78,7 @@ func (p *UsersUidBanController) GetHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersUidBanController) PostHandler() gin.HandlerFunc {
+func (p *UidBanController) PostHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var aid int64
 		if wc, err := base.Authorization(c, p.LowestRole); err != nil {
@@ -123,6 +123,6 @@ func (p *UsersUidBanController) PostHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersUidBanController) PutHandler() gin.HandlerFunc {
+func (p *UidBanController) PutHandler() gin.HandlerFunc {
 	return nil
 }

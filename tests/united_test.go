@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"jun/dao"
+	"jun/model/option"
 	"jun/model/post"
 	"jun/utils/conf"
 )
@@ -70,6 +71,17 @@ func TestFindPost(t *testing.T) {
 				t.Error(err)
 			}
 			t.Log(string(s))
+		}
+	}()
+}
+
+func TestGetOption(t *testing.T) {
+	func() {
+		val, err := option.GetPostCountPerPage()
+		if err != nil {
+			t.Error(err)
+		} else {
+			t.Log(val)
 		}
 	}()
 }

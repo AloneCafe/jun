@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-type UsersBanController struct {
+type BanController struct {
 	LowestRole dto.UserRole
 }
 
-func (p *UsersBanController) DeleteHandler() gin.HandlerFunc {
+func (p *BanController) DeleteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -29,7 +29,7 @@ func (p *UsersBanController) DeleteHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersBanController) GetHandler() gin.HandlerFunc {
+func (p *BanController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -50,10 +50,10 @@ func (p *UsersBanController) GetHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersBanController) PostHandler() gin.HandlerFunc {
+func (p *BanController) PostHandler() gin.HandlerFunc {
 	return nil
 }
 
-func (p *UsersBanController) PutHandler() gin.HandlerFunc {
+func (p *BanController) PutHandler() gin.HandlerFunc {
 	return nil
 }

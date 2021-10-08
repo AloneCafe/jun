@@ -5,7 +5,7 @@ import (
 )
 
 func FindPost(titleExp string, descExp string, bodyExp string,
-	sizeOfPage int, pageIdx int) (*[]dto.PostDetail, error) {
+	sizeOfPage int64, pageIdx int64) (*[]dto.PostDetail, error) {
 
 	return findPost(titleExp, descExp, bodyExp,
 		true, true, true,

@@ -2,19 +2,20 @@ package users
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"jun/controller/base"
 	"jun/dto"
 	"jun/model/user"
-	"net/http"
 )
 
-type UsersController struct {
+type RootController struct {
 	LowestRole dto.UserRole
 	//base.IBasicController
 }
 
-func (p *UsersController) DeleteHandler() gin.HandlerFunc {
+func (p *RootController) DeleteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -25,7 +26,7 @@ func (p *UsersController) DeleteHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersController) GetHandler() gin.HandlerFunc {
+func (p *RootController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -46,7 +47,7 @@ func (p *UsersController) GetHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersController) PostHandler() gin.HandlerFunc {
+func (p *RootController) PostHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := base.Authorization(c, p.LowestRole); err != nil {
 			return
@@ -81,6 +82,6 @@ func (p *UsersController) PostHandler() gin.HandlerFunc {
 	}
 }
 
-func (p *UsersController) PutHandler() gin.HandlerFunc {
+func (p *RootController) PutHandler() gin.HandlerFunc {
 	return nil
 }

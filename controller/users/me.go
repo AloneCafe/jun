@@ -2,18 +2,19 @@ package users
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"jun/controller/base"
 	"jun/dto"
 	"jun/model/user"
-	"net/http"
 )
 
-type UsersMeController struct {
+type MeController struct {
 	//base.IBasicController
 }
 
-func (*UsersMeController) DeleteHandler() gin.HandlerFunc {
+func (*MeController) DeleteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 至少是订阅者级别，才有个人信息呀
 		var id int64
@@ -38,7 +39,7 @@ func (*UsersMeController) DeleteHandler() gin.HandlerFunc {
 		}
 	}
 }
-func (*UsersMeController) GetHandler() gin.HandlerFunc {
+func (*MeController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 至少是订阅者级别，才有个人信息呀
 		var id int64
@@ -61,11 +62,11 @@ func (*UsersMeController) GetHandler() gin.HandlerFunc {
 	}
 }
 
-func (*UsersMeController) PostHandler() gin.HandlerFunc {
+func (*MeController) PostHandler() gin.HandlerFunc {
 	return nil
 }
 
-func (*UsersMeController) PutHandler() gin.HandlerFunc {
+func (*MeController) PutHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 至少是订阅者级别，才有个人信息呀
 		var id int64

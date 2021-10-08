@@ -70,7 +70,7 @@ func searchAllByTitleAndDesc(search string) ([]dto.Post, error) {
 func findPost(titleExp string, descExp string, bodyExp string,
 	exceptFoldedComment bool, exceptBanComment bool, exceptBanCommentAuthor bool,
 	exceptBanPost bool, exceptBanPostAuthor bool, exceptPrivatePost bool,
-	sizeOfPage int, pageIdx int) (*[]dto.PostDetail, error) {
+	sizeOfPage int64, pageIdx int64) (*[]dto.PostDetail, error) {
 
 	pp := new([]dto.PostDetail)
 	offset := sizeOfPage * pageIdx
