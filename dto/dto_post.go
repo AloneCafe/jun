@@ -42,17 +42,17 @@ type PostWithProp struct {
 }
 
 type PostNoBody struct {
-	PID         int64      `json:"p_id" db:"p_id"`
-	Title       *string    `json:"p_title" db:"p_title"`
-	Desc        *string    `json:"p_desc" db:"p_desc"`
-	AuthorID    int64      `json:"u_id" db:"u_id"`
-	Keywords    *string    `json:"p_keywords" db:"p_keywords"`
-	Type        *string    `json:"p_type" db:"p_type"`
-	CreateTime  *time.Time `json:"p_create_time" db:"p_create_time"`
-	UpdateTime  *time.Time `json:"p_update_time" db:"p_update_time"`
-	Thumbnails  *string    `json:"p_thumbnails" db:"p_thumbnails"`
-	CategoryIDs []int64    `json:"p_category_ids" db:"p_category_ids"`
-	TagIDs      []int64    `json:"p_tag_ids" db:"p_tag_ids"`
+	PID        int64      `json:"p_id" db:"p_id"`
+	Title      *string    `json:"p_title" db:"p_title"`
+	Desc       *string    `json:"p_desc" db:"p_desc"`
+	AuthorID   int64      `json:"u_id" db:"u_id"`
+	Keywords   *string    `json:"p_keywords" db:"p_keywords"`
+	Type       *string    `json:"p_type" db:"p_type"`
+	CreateTime *time.Time `json:"p_create_time" db:"p_create_time"`
+	UpdateTime *time.Time `json:"p_update_time" db:"p_update_time"`
+	Thumbnails *string    `json:"p_thumbnails" db:"p_thumbnails"`
+	Categories []Category `json:"p_category_ids" db:"p_category_ids"`
+	Tags       []Tag      `json:"p_tag_ids" db:"p_tag_ids"`
 }
 
 type PostNoBodyWithProp struct {

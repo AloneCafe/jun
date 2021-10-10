@@ -28,6 +28,84 @@ func FindPostNoBody(titleExp string, descExp string, bodyExp string,
 		sizeOfPage, pageIdx)
 }
 
+func GetNoBodyByID(id int64) (*dto.PostNoBodyWithProp, error) {
+	p := new(dto.PostNoBodyWithProp)
+	err := getNoBodyByID(p, id)
+	return p, err
+}
+
+func getNoBodyByID(p *dto.PostNoBodyWithProp, id int64) error {
+	sql := `
+select post.*,
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt, # 正赞
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt,    # 负赞
+       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt,    # 评论（看传参是否限制判定）
+       (select count(star_post.sp_id) from star_post where star_post.to_p_id = post.p_id) as p_star_cnt
+from post where post.p_id = ?
+	`
+	err := dao.Query1(p, sql, id)
+	if err != nil {
+		return err
+	}
+
+	tp := new([]dto.Tag)
+	sql = `select tag.* from tag_post, tag where tag_post.t_id = tag.t_id and p_id = ?`
+	err = dao.QueryN(tp, sql, id)
+	if err != nil {
+		return err
+	}
+
+	cp := new([]dto.Category)
+	sql = `select category.* from category_post, category where category_post.t_id = category.t_id and p_id = ?`
+	err = dao.QueryN(cp, sql, id)
+	if err != nil {
+		return err
+	}
+
+	p.Tags = *tp
+	p.Categories = *cp
+	return err
+}
+
+func GetByID(id int64) (*dto.PostWithProp, error) {
+	p := new(dto.PostWithProp)
+	err := getByID(p, id)
+	return p, err
+}
+
+func getByID(p *dto.PostWithProp, id int64) error {
+	sql := `
+select post.*,
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt, # 正赞
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt,    # 负赞
+       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt,    # 评论（看传参是否限制判定）
+       (select count(star_post.sp_id) from star_post where star_post.to_p_id = post.p_id) as p_star_cnt
+from post where post.p_id = ?
+	`
+	err := dao.Query1(p, sql, id)
+	if err != nil {
+		return err
+	}
+
+	tp := new([]dto.Tag)
+	sql = `select tag.* from tag_post, tag where tag_post.t_id = tag.t_id and p_id = ?`
+	err = dao.QueryN(tp, sql, id)
+	if err != nil {
+		return err
+	}
+
+	cp := new([]dto.Category)
+	sql = `select category.* from category_post, category where category_post.t_id = category.t_id and p_id = ?`
+	err = dao.QueryN(cp, sql, id)
+	if err != nil {
+		return err
+	}
+
+	p.Tags = *tp
+	p.Categories = *cp
+	return err
+}
+
 func Add(title, desc, body *string,
 	authorID int64, keywords *string, tagIDs []int64, categoryIDs []int64,
 	postType *string, thumbnails *string) (int64, error) {
