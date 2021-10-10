@@ -20,7 +20,14 @@ func init() {
 	base.SetBasicController("/posts/match/:match/page/:pageIndex", &posts.MatchListController{
 		LowestRole: dto.U_ROLE_VISITOR,
 	})
+	base.SetBasicController("/posts/match/:match/page/", &posts.MatchListController{
+		LowestRole: dto.U_ROLE_VISITOR,
+	})
+
 	base.SetBasicController("/posts/page/:pageIndex", &posts.MatchListController{
+		LowestRole: dto.U_ROLE_VISITOR,
+	})
+	base.SetBasicController("/posts/page/", &posts.MatchListController{
 		LowestRole: dto.U_ROLE_VISITOR,
 	})
 

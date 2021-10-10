@@ -44,7 +44,7 @@ func (p *MatchListController) GetHandler() gin.HandlerFunc {
 			return
 		}
 
-		findPost, err := post.FindPost(match, match, match, sizeOfPage, pi)
+		findPost, err := post.FindPostNoBody(match, match, match, sizeOfPage, pi)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError,
 				dto.NewResult(false, "获取文章信息出错", nil))
