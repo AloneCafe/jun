@@ -1,4 +1,4 @@
-package tag
+package category
 
 func ExistCategoryIDs(ids []int64) (bool, error) {
 	return existCategoryIDs(ids)

@@ -1,13 +1,15 @@
 package dao
 
 import (
+	"log"
+	"testing"
+
 	"github.com/gomodule/redigo/redis"
+	"github.com/jmoiron/sqlx"
 	"jun/dao/underlying"
 	"jun/utils/binary"
 	"jun/utils/conf"
 	"jun/utils/hash"
-	"log"
-	"testing"
 )
 
 var (
@@ -48,6 +50,11 @@ func TestRedis(arg1 string, arg2 string, t *testing.T) (interface{}, error) {
 
 	}
 	return nil, err
+}
+
+func GetTx() (*sqlx.Tx, error) {
+	myDb := underlying.GetDB()
+	return myDb.Beginx()
 }
 
 // Query1 p points to a struct
