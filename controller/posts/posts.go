@@ -27,19 +27,20 @@ func (p *RootController) GetHandler() gin.HandlerFunc {
 
 func (p *RootController) PostHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if _, err := base.Authorization(c, p.PostLowestRole); err != nil {
+		var authorID int64
+		if wc, err := base.Authorization(c, p.PostLowestRole); err != nil {
+			authorID = wc.UID
 			return
 		}
 
-		var u dto.Post
-		err := c.BindJSON(&u)
+		var p dto.Post
+		err := c.BindJSON(&p)
 		if err != nil {
 			c.JSON(http.StatusBadRequest,
 				dto.NewResult(false, "参数不正确", nil))
 			return
 		} else {
-			id, err := post.Add(u.Email, u.Uname, u.PwdEncrypted, u.Desc,
-				u.Thumbnails, u.Sex, u.Birth, u.Tel, u.Role)
+			id, err := post.Add(p.Title, p.Desc, p.Body, authorID, p.Keywords, p.TagIDs, p.CategoryIDs, p.Type, p.Thumbnails)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError,
 					dto.NewResult(false, "文章添加失败", nil))

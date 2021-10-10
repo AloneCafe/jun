@@ -6,7 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"jun/dao"
 	"jun/dto"
-	category "jun/model/categroy"
+	"jun/model/categroy"
 	"jun/model/tag"
 )
 
@@ -28,9 +28,9 @@ func FindPostNoBody(titleExp string, descExp string, bodyExp string,
 		sizeOfPage, pageIdx)
 }
 
-func Add(title string, desc string, body string,
-	authorID int64, keywords string, tagIDs []int64, categoryIDs []int64,
-	postType string, thumbnails []byte) (int64, error) {
+func Add(title, desc, body *string,
+	authorID int64, keywords *string, tagIDs []int64, categoryIDs []int64,
+	postType *string, thumbnails *string) (int64, error) {
 
 	if b, err := tag.ExistTagIDs(tagIDs); err != nil {
 		// 内部错误
@@ -92,7 +92,7 @@ func addTagsAndCategories4Post(tx *sqlx.Tx, postID int64, tagIDs []int64, catego
 	return nil
 }
 
-func add(tx *sqlx.Tx, title string, desc string, body string, authorID int64, keywords string, postType string, thumbnails []byte) (int64, error) {
+func add(tx *sqlx.Tx, title, desc, body *string, authorID int64, keywords *string, postType *string, thumbnails *string) (int64, error) {
 	sql := `insert into post(p_title, p_desc, p_body, u_id, p_keywords, p_type, p_thumbnails) values(?, ?, ?, ?, ?, ?, ?)`
 	res, err := tx.Exec(sql, title, desc, body, authorID, keywords, postType, thumbnails)
 	if err != nil {
