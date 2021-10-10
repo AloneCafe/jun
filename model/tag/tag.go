@@ -7,3 +7,7 @@ func ExistTagIDs(ids []int64) (bool, error) {
 func ExistTagNames(names []string) (bool, error) {
 	return existTagNames(names)
 }
+
+func IDsToNames() {
+	panic("not implemented")
+}

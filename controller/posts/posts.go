@@ -8,7 +8,6 @@ import (
 	"jun/controller/base"
 	"jun/dto"
 	"jun/model/post"
-	"jun/model/user"
 )
 
 type RootController struct {
@@ -40,13 +39,13 @@ func (p *RootController) PostHandler() gin.HandlerFunc {
 				dto.NewResult(false, "参数不正确", nil))
 			return
 		} else {
-			id, err := post.Add(p.Title, p.Desc, p.Body, authorID, p.Keywords, p.TagIDs, p.CategoryIDs, p.Type, p.Thumbnails)
+			id, err := post.Add(p.Title, p.Desc, p.Body, authorID, p.Keywords, dto.DetachTagsIDs(p.Tags), dto.DetachCategoriesIDs(p.Categories), p.Type, p.Thumbnails)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError,
 					dto.NewResult(false, "文章添加失败", nil))
 				return
 			} else {
-				_, err := post.GetById(id)
+				_, err := post.GetByID(id)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError,
 						dto.NewResult(false, fmt.Sprintf("获取文章信息出错，id = %d", id), nil))
