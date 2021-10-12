@@ -20,7 +20,21 @@ func (p *RootController) DeleteHandler() gin.HandlerFunc {
 
 func (p *RootController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 获取当前用户的文章
+		var authorID int64
+		if wc, err := base.Authorization(c, p.PostLowestRole); err != nil {
+			authorID = wc.UID
+			return
+		}
 
+		if posts, err := post.GetAllNoBodyByUID(authorID); err != nil {
+			c.JSON(http.StatusInternalServerError,
+				dto.NewResult(false, "获取当前用户的文章信息出错", nil))
+		} else {
+			c.JSON(http.StatusOK,
+				dto.NewResult(true, "获取当前用户的文章信息成功", posts))
+		}
+		return
 	}
 }
 
@@ -39,7 +53,8 @@ func (p *RootController) PostHandler() gin.HandlerFunc {
 				dto.NewResult(false, "参数不正确", nil))
 			return
 		} else {
-			id, err := post.Add(p.Title, p.Desc, p.Body, authorID, p.Keywords, dto.DetachTagsIDs(p.Tags), dto.DetachCategoriesIDs(p.Categories), p.Type, p.Thumbnails)
+			id, err := post.Add(p.Title, p.Desc, p.Body, authorID, p.Keywords,
+				dto.DetachTagsIDs(p.Tags), dto.DetachCategoriesIDs(p.Categories), p.Type, p.Thumbnails)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError,
 					dto.NewResult(false, "文章添加失败", nil))

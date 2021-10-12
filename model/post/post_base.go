@@ -177,9 +177,9 @@ func add(tx *sqlx.Tx, title, desc, body *string, authorID int64, keywords *strin
 func getByID(p *dto.PostWithProp, id int64) error {
 	sql := `
 select post.*,
-       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt, # 正赞
-       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt,    # 负赞
-       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt,    # 评论（看传参是否限制判定）
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt, 
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt, 
+       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt, 
        (select count(star_post.sp_id) from star_post where star_post.to_p_id = post.p_id) as p_star_cnt
 from post where post.p_id = ?
 	`
@@ -210,9 +210,9 @@ from post where post.p_id = ?
 func getNoBodyByID(p *dto.PostNoBodyWithProp, id int64) error {
 	sql := `
 select post.*,
-       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt, # 正赞
-       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt,    # 负赞
-       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt,    # 评论（看传参是否限制判定）
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt, 
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt, 
+       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt, 
        (select count(star_post.sp_id) from star_post where star_post.to_p_id = post.p_id) as p_star_cnt
 from post where post.p_id = ?
 	`
@@ -238,4 +238,32 @@ from post where post.p_id = ?
 	p.Tags = *tp
 	p.Categories = *cp
 	return err
+}
+
+func getAllByUID(uid int64) (*[]dto.PostWithProp, error) {
+	sql := `
+select post.*,
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt,
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt,
+       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt,
+       (select count(star_post.sp_id) from star_post where star_post.to_p_id = post.p_id) as p_star_cnt
+from post where post.u_id = ?
+	`
+	pp := new([]dto.PostWithProp)
+	err := dao.QueryN(pp, sql, uid)
+	return pp, err
+}
+
+func getAllNoBodyByUID(uid int64) (*[]dto.PostNoBodyWithProp, error) {
+	sql := `
+select post.*,
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and not like_post.lp_neg) as p_like_cnt,
+       (select count(like_post.lp_id) from like_post where like_post.p_id = post.p_id and like_post.lp_neg) as p_unlike_cnt,
+       (select count(comment.c_id) from comment where comment.to_p_id = post.p_id) as p_comment_cnt,
+       (select count(star_post.sp_id) from star_post where star_post.to_p_id = post.p_id) as p_star_cnt
+from post where post.u_id = ?
+	`
+	pp := new([]dto.PostNoBodyWithProp)
+	err := dao.QueryN(pp, sql, uid)
+	return pp, err
 }

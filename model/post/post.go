@@ -39,6 +39,14 @@ func GetByID(id int64) (*dto.PostWithProp, error) {
 	return p, err
 }
 
+func GetAllByUID(uid int64) (*[]dto.PostWithProp, error) {
+	return getAllByUID(uid)
+}
+
+func GetAllNoBodyByUID(uid int64) (*[]dto.PostWithProp, error) {
+	return getAllNoBodyByUID(uid)
+}
+
 func Add(title, desc, body *string,
 	authorID int64, keywords *string, tagIDs []int64, categoryIDs []int64,
 	postType *string, thumbnails *string) (int64, error) {
