@@ -23,8 +23,9 @@ func (p *RootController) GetHandler() gin.HandlerFunc {
 		// 获取当前用户的文章
 		var authorID int64
 		if wc, err := base.Authorization(c, p.PostLowestRole); err != nil {
-			authorID = wc.UID
 			return
+		} else {
+			authorID = wc.UID
 		}
 
 		if posts, err := post.GetAllNoBodyByUID(authorID); err != nil {
@@ -42,8 +43,9 @@ func (p *RootController) PostHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var authorID int64
 		if wc, err := base.Authorization(c, p.PostLowestRole); err != nil {
-			authorID = wc.UID
 			return
+		} else {
+			authorID = wc.UID
 		}
 
 		var p dto.Post
