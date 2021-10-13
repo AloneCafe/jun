@@ -87,44 +87,46 @@ func (p *PidController) PutHandler() gin.HandlerFunc {
 			aid = wc.UID
 		}
 
-		var u dto.UserInfoAllUpdate
+		var u dto.PostInfoUpdate
 		err := c.BindJSON(&u)
 		var err2 error
-		u.IDReadOnly, err2 = strconv.ParseInt(c.Param("uid"), 10, 64)
+		u.PIDReadOnly, err2 = strconv.ParseInt(c.Param("pid"), 10, 64) // 覆盖 ID 值
 		if err != nil || err2 != nil {
 			c.JSON(http.StatusBadRequest,
 				dto.NewResult(false, "参数不正确", nil))
-		} else if u.Uname == nil {
+		} else if u.Title == nil {
 			c.JSON(http.StatusBadRequest,
-				dto.NewResult(false, "用户数据序列化失败", nil))
+				dto.NewResult(false, "文章数据序列化失败", nil))
 		} else {
 			var err error
-			if u.IDReadOnly == aid { // 此处需要判断，管理员是无法更改自己的角色的（不允许自我降职）
-				_, err = user.UpdateBasicInfo(&dto.UserInfoBasicUpdate{
-					IDReadOnly: u.IDReadOnly,
-					Email:      u.Email,
-					Uname:      u.Uname,
-					Pwd:        u.Pwd,
-					Desc:       u.Desc,
-					Thumbnails: u.Thumbnails,
-					Sex:        u.Sex,
-					Birth:      u.Birth,
-					Tel:        u.Tel,
-				})
+			var thisRole dto.UserRole
+			if role, err := user.GetRoleById(aid); err != nil {
+				thisRole = *role
 			} else {
-				_, err = user.UpdateAllInfo(&u)
+				c.JSON(http.StatusBadRequest,
+					dto.NewResult(false, "参数不正确", nil))
+				return
 			}
+
+			if u.AuthorID == aid || thisRole == dto.U_ROLE_ADMIN { // 此处需要判断，文章的作者才有自我修改权，或者当前用户是管理员
+				_, err = post.UpdateInfo(&u)
+			} else {
+				c.JSON(http.StatusUnauthorized,
+					dto.NewResult(false, "当前用户没有修改权限", nil))
+				return
+			}
+
 			if err != nil {
 				c.JSON(http.StatusInternalServerError,
-					dto.NewResult(false, fmt.Sprintf("用户数据更新失败，id = %d", u.IDReadOnly), nil))
+					dto.NewResult(false, fmt.Sprintf("文章数据更新失败，id = %d", u.PIDReadOnly), nil))
 			} else {
-				_, err := user.GetById(u.IDReadOnly)
+				_, err := user.GetById(u.PIDReadOnly)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError,
-						dto.NewResult(false, fmt.Sprintf("用户数据更新失败，id = %d", u.IDReadOnly), nil))
+						dto.NewResult(false, fmt.Sprintf("文章数据更新失败，id = %d", u.PIDReadOnly), nil))
 				} else {
 					c.JSON(http.StatusOK,
-						dto.NewResult(true, "用户数据更新成功", nil))
+						dto.NewResult(true, "文章数据更新成功", nil))
 				}
 			}
 		}
