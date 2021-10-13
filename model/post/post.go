@@ -96,5 +96,31 @@ func DeleteByID(pid int64) (int64, error) {
 }
 
 func UpdateInfo(p *dto.PostInfoUpdate) (int64, error) {
-	return updateInfo(p)
+	tx, err := dao.GetTx()
+	if err != nil {
+		return 0, err
+	}
+
+	lastInsertID, err := update(tx, p)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	// 更新标签与分类
+	if err := deleteAllTagsAndCategories4Post(tx, p.PIDReadOnly); err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	if err := addTagsAndCategories4Post(tx,
+		p.PIDReadOnly,
+		dto.DetachTagsIDs(p.Tags),
+		dto.DetachCategoriesIDs(p.Categories)); err != nil {
+
+		tx.Rollback()
+		return 0, err
+	}
+
+	return lastInsertID, err
 }

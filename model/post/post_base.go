@@ -269,6 +269,25 @@ from post where post.u_id = ?
 	`
 	pp := new([]dto.PostWithProp)
 	err := dao.QueryN(pp, sql, uid)
+
+	for i, p := range *pp {
+		tp := new([]dto.Tag)
+		sql = `select tag.* from tag_post, tag where tag_post.t_id = tag.t_id and p_id = ?`
+		err = dao.QueryN(tp, sql, p.PID)
+		if err != nil {
+			return nil, err
+		}
+
+		cp := new([]dto.Category)
+		sql = `select category.* from category_post, category where category_post.t_id = category.t_id and p_id = ?`
+		err = dao.QueryN(cp, sql, p.PID)
+		if err != nil {
+			return nil, err
+		}
+
+		(*pp)[i].Tags = *tp
+		(*pp)[i].Categories = *cp
+	}
 	return pp, err
 }
 
@@ -283,6 +302,25 @@ from post where post.u_id = ?
 	`
 	pp := new([]dto.PostNoBodyWithProp)
 	err := dao.QueryN(pp, sql, uid)
+
+	for i, p := range *pp {
+		tp := new([]dto.Tag)
+		sql = `select tag.* from tag_post, tag where tag_post.t_id = tag.t_id and p_id = ?`
+		err = dao.QueryN(tp, sql, p.PID)
+		if err != nil {
+			return nil, err
+		}
+
+		cp := new([]dto.Category)
+		sql = `select category.* from category_post, category where category_post.t_id = category.t_id and p_id = ?`
+		err = dao.QueryN(cp, sql, p.PID)
+		if err != nil {
+			return nil, err
+		}
+
+		(*pp)[i].Tags = *tp
+		(*pp)[i].Categories = *cp
+	}
 	return pp, err
 }
 
@@ -316,7 +354,7 @@ func deleteByID(pid int64) (int64, error) {
 	return lastInsertID, nil
 }
 
-func updateInfo(p *dto.PostInfoUpdate) (int64, error) {
+func update(tx *sqlx.Tx, p *dto.PostInfoUpdate) (int64, error) {
 	sql :=
 		`update post set p_title = ?, p_desc = ?, u_id = ?, p_keywords = ?, 
 p_type = ?, p_thumbnails = ?, p_body = ?, p_update_time = now() where u_id = ?`
@@ -328,7 +366,26 @@ p_type = ?, p_thumbnails = ?, p_body = ?, p_update_time = now() where u_id = ?`
 	dexss.SimpleText(p.Type)
 	// 其他字段一般不会被发回，所以无需防御 XSS
 
-	return dao.Update(sql, p.Title, p.Desc, p.AuthorID, p.Keywords, p.Type, p.Thumbnails, p.Body, p.PIDReadOnly)
+	res, err := tx.Exec(sql, p.Title, p.Desc, p.AuthorID, p.Keywords, p.Type, p.Thumbnails, p.Body, p.PIDReadOnly)
+	if err != nil {
+		return 0, err
+	}
 
-	// 更新标签与分类 TODO
+	lid, err := res.LastInsertId()
+	return lid, err
+}
+
+func deleteAllTagsAndCategories4Post(tx *sqlx.Tx, postID int64) error {
+	tagSql := `delete from tag_post where p_id = ?`
+	categorySql := `delete from category_post where p_id = ?`
+
+	if _, err := tx.Exec(tagSql, postID); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(categorySql, postID); err != nil {
+		return err
+	}
+
+	return nil
 }
