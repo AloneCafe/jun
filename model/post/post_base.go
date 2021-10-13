@@ -178,6 +178,13 @@ values(
    ifnull(?, ''), 
    ifnull(?, ''), now(), now()
 )`
+
+	dexss.SimpleText(title)
+	dexss.SimpleText(desc)
+	dexss.RichText(body) // Body -> RichText
+	dexss.SimpleText(keywords)
+	dexss.SimpleText(postType)
+
 	res, err := tx.Exec(sql, title, desc, body, authorID, keywords, postType, thumbnails)
 	if err != nil {
 		return 0, err
@@ -310,8 +317,9 @@ func deleteByID(pid int64) (int64, error) {
 }
 
 func updateInfo(p *dto.PostInfoUpdate) (int64, error) {
-	sql := `update post set u_email = ?, u_uname = ?, u_pwd_encrypted = sha1(concat(?, 'jun990527')), u_desc = ?, 
-           u_thumbnails = ?, u_sex = ?, u_birth = ?, u_tel = ?, u_active_time = now(), u_role = ? where u_id = ?`
+	sql :=
+		`update post set p_title = ?, p_desc = ?, u_id = ?, p_keywords = ?, 
+p_type = ?, p_thumbnails = ?, p_body = ?, p_update_time = now() where u_id = ?`
 
 	dexss.SimpleText(p.Title)
 	dexss.SimpleText(p.Desc)
@@ -322,5 +330,5 @@ func updateInfo(p *dto.PostInfoUpdate) (int64, error) {
 
 	return dao.Update(sql, p.Title, p.Desc, p.AuthorID, p.Keywords, p.Type, p.Thumbnails, p.Body, p.PIDReadOnly)
 
-	// TODO
+	// 更新标签与分类 TODO
 }
