@@ -8,6 +8,7 @@ import (
 	"jun/controller/base"
 	"jun/dto"
 	"jun/model/post"
+	"jun/model/user"
 )
 
 type RootController struct {
@@ -28,14 +29,24 @@ func (p *RootController) GetHandler() gin.HandlerFunc {
 			authorID = wc.UID
 		}
 
-		if posts, err := post.GetAllNoBodyByUID(authorID); err != nil {
+		if role, err := user.GetRoleById(authorID); err != nil {
 			c.JSON(http.StatusInternalServerError,
 				dto.NewResult(false, "获取当前用户的文章信息出错", nil))
+			return
+		} else if *role <= dto.U_ROLE_SUBCRIBER {
+			c.JSON(http.StatusUnauthorized,
+				dto.NewResult(false, "没有获取所属文章的权限", nil))
+			return
 		} else {
-			c.JSON(http.StatusOK,
-				dto.NewResult(true, "获取当前用户的文章信息成功", posts))
+			if posts, err := post.GetAllNoBodyByUID(authorID); err != nil {
+				c.JSON(http.StatusInternalServerError,
+					dto.NewResult(false, "获取当前用户的文章信息出错", nil))
+			} else {
+				c.JSON(http.StatusOK,
+					dto.NewResult(true, "获取当前用户的文章信息成功", posts))
+			}
+			return
 		}
-		return
 	}
 }
 

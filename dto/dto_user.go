@@ -8,9 +8,6 @@ type UserRoles int32 // UserRole ^ 2
 const (
 	U_ROLE_VISITOR = iota
 	U_ROLE_SUBCRIBER
-	U_ROLE_CONTRIBUTOR
-	U_ROLE_AUTHOR
-	U_ROLE_EDITOR
 	U_ROLE_ADMIN
 )
 
