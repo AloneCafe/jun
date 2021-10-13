@@ -43,7 +43,7 @@ func GetAllByUID(uid int64) (*[]dto.PostWithProp, error) {
 	return getAllByUID(uid)
 }
 
-func GetAllNoBodyByUID(uid int64) (*[]dto.PostWithProp, error) {
+func GetAllNoBodyByUID(uid int64) (*[]dto.PostNoBodyWithProp, error) {
 	return getAllNoBodyByUID(uid)
 }
 
@@ -89,4 +89,8 @@ func Add(title, desc, body *string,
 	}
 
 	return lastInsertID, nil
+}
+
+func DeleteByID(pid int64) (int64, error) {
+	return deleteByID(pid)
 }

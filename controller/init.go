@@ -23,19 +23,16 @@ func init() {
 	base.SetBasicController("/posts/match/:match/page/", &posts.MatchListController{
 		LowestRole: dto.U_ROLE_VISITOR,
 	})
-
 	base.SetBasicController("/posts/page/:pageIndex", &posts.MatchListController{
 		LowestRole: dto.U_ROLE_VISITOR,
 	})
 	base.SetBasicController("/posts/page/", &posts.MatchListController{
 		LowestRole: dto.U_ROLE_VISITOR,
 	})
+	base.SetBasicController("/posts/:pid", &posts.PidController{
+		GetLowestRole:    dto.U_ROLE_SUBCRIBER,
+		PutLowestRole:    dto.U_ROLE_ADMIN,
+		DeleteLowestRole: dto.U_ROLE_ADMIN,
+	})
 
-	/*
-		base.SetBasicController("/posts", &posts.RootController{
-			GetLowestRole: dto.U_ROLE_VISITOR,
-			PostLowestRole: dto.U_ROLE_ADMIN,
-			PutLowestRole: dto.U_ROLE_ADMIN,
-			DeleteLowestRole: dto.U_ROLE_ADMIN,
-		})*/
 }

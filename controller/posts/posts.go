@@ -12,6 +12,7 @@ import (
 )
 
 type RootController struct {
+	GetLowestRole  dto.UserRole
 	PostLowestRole dto.UserRole
 }
 
@@ -23,7 +24,7 @@ func (p *RootController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取当前用户的文章
 		var authorID int64
-		if wc, err := base.Authorization(c, p.PostLowestRole); err != nil {
+		if wc, err := base.Authorization(c, p.GetLowestRole); err != nil {
 			return
 		} else {
 			authorID = wc.UID

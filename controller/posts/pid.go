@@ -1,4 +1,4 @@
-package users
+package posts
 
 import (
 	"fmt"
@@ -8,87 +8,80 @@ import (
 	"github.com/gin-gonic/gin"
 	"jun/controller/base"
 	"jun/dto"
+	"jun/model/post"
 	"jun/model/user"
 )
 
-type UidController struct {
-	LowestRole dto.UserRole
+type PidController struct {
+	DeleteLowestRole dto.UserRole
+	GetLowestRole    dto.UserRole
+	PutLowestRole    dto.UserRole
 }
 
-func (p *UidController) DeleteHandler() gin.HandlerFunc {
+func (p *PidController) DeleteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var aid int64
-		if wc, err := base.Authorization(c, p.LowestRole); err != nil {
+		if _, err := base.Authorization(c, p.DeleteLowestRole); err != nil {
 			return
-		} else {
-			aid = wc.UID
 		}
 
-		if id, err := strconv.ParseInt(c.Param("uid"), 10, 64); err != nil {
+		if id, err := strconv.ParseInt(c.Param("pid"), 10, 64); err != nil {
 			c.JSON(http.StatusBadRequest,
 				dto.NewResult(false, "参数不正确", nil))
 		} else {
-			var err error
-			if id == aid {
-				c.JSON(http.StatusBadRequest,
-					dto.NewResult(false, "危险操作，无法删除管理员账户", nil))
-				return
-			} else {
-				_, err = user.DeleteById(id)
-			}
-
-			if err != nil {
+			if _, err := post.DeleteByID(id); err != nil {
 				c.JSON(http.StatusInternalServerError,
-					dto.NewResult(false, fmt.Sprintf("用户删除失败，id = %d", id), nil))
+					dto.NewResult(false, fmt.Sprintf("删除文章失败，id = %d", id), nil))
 			} else {
-				_, err := user.GetById(id)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError,
-						dto.NewResult(false, fmt.Sprintf("用户删除失败，id = %d", id), nil))
-				} else {
+				_, err := post.GetByID(id)
+				if err == nil {
 					c.JSON(http.StatusOK,
-						dto.NewResult(true, "用户删除成功", nil))
+						dto.NewResult(true, "删除文章成功", nil))
+				} else {
+					c.JSON(http.StatusInternalServerError,
+						dto.NewResult(false, fmt.Sprintf("删除文章失败，id = %d", id), nil))
 				}
 			}
 		}
 	}
 }
 
-func (p *UidController) GetHandler() gin.HandlerFunc {
+func (p *PidController) GetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if _, err := base.Authorization(c, p.LowestRole); err != nil {
+		if _, err := base.Authorization(c, p.GetLowestRole); err != nil {
 			return
 		}
 
-		if id, err := strconv.ParseInt(c.Param("uid"), 10, 64); err != nil {
+		if id, err := strconv.ParseInt(c.Param("pid"), 10, 64); err != nil {
 			c.JSON(http.StatusBadRequest,
 				dto.NewResult(false, "参数不正确", nil))
-			return
-
 		} else {
-			u, err := user.GetById(id)
-			if err != nil {
+			if _, err := post.DeleteByID(id); err != nil {
 				c.JSON(http.StatusInternalServerError,
-					dto.NewResult(false, fmt.Sprintf("获取用户信息出错，id = %d", id), nil))
-				return
-
+					dto.NewResult(false, fmt.Sprintf("删除文章失败，id = %d", id), nil))
 			} else {
-				c.JSON(http.StatusOK,
-					dto.NewResult(true, "获取用户信息成功", u))
-				return
+				u, err := post.GetByID(id)
+				if err != nil {
+					c.JSON(http.StatusOK,
+						dto.NewResult(true, "获取用户信息成功", u))
+					return
+				} else {
+					c.JSON(http.StatusInternalServerError,
+						dto.NewResult(false, fmt.Sprintf("获取用户信息出错，id = %d", id), nil))
+					return
+				}
 			}
 		}
 	}
 }
 
-func (p *UidController) PostHandler() gin.HandlerFunc {
+func (p *PidController) PostHandler() gin.HandlerFunc {
 	return nil
 }
 
-func (p *UidController) PutHandler() gin.HandlerFunc {
+func (p *PidController) PutHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var aid int64
-		if wc, err := base.Authorization(c, p.LowestRole); err != nil {
+		if wc, err := base.Authorization(c, p.PutLowestRole); err != nil {
 			return
 		} else {
 			aid = wc.UID

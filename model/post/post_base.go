@@ -267,3 +267,33 @@ from post where post.u_id = ?
 	err := dao.QueryN(pp, sql, uid)
 	return pp, err
 }
+
+func deleteByID(pid int64) (int64, error) {
+	sqls := []string{
+		`delete from post where p_id = ?`,
+		`delete from private_post where p_id = ?`,
+		`delete from like_post where p_id = ?`,
+		`delete from category_post where p_id = ?`,
+		`delete from ban_post where p_id = ?`,
+		`delete from star_post where to_p_id = ?`,
+		`delete from tag_post where p_id = ?`,
+	}
+	var lastInsertID int64
+	if tx, err := dao.GetTx(); err != nil {
+		return 0, err
+	} else {
+		for _, sql := range sqls {
+			res, err := tx.Exec(sql, pid)
+			if err != nil {
+				tx.Rollback()
+				return 0, err
+			}
+			lastInsertID, _ = res.LastInsertId()
+		}
+		err := tx.Commit()
+		if err != nil {
+			return 0, err
+		}
+	}
+	return lastInsertID, nil
+}
