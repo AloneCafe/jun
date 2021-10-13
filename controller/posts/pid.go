@@ -108,7 +108,7 @@ func (p *PidController) PutHandler() gin.HandlerFunc {
 				return
 			}
 
-			if u.AuthorID == aid || thisRole == dto.U_ROLE_ADMIN { // 此处需要判断，文章的作者才有自我修改权，或者当前用户是管理员
+			if u.AuthorID == aid || thisRole == dto.U_ROLE_ADMIN { // 此处需要判断，文章的作者无法将文章所属的作者修改，除非当前用户是管理员
 				_, err = post.UpdateInfo(&u)
 			} else {
 				c.JSON(http.StatusUnauthorized,

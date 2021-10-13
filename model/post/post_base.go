@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"jun/dao"
 	"jun/dto"
+	"jun/utils/dexss"
 )
 
 /*
@@ -166,7 +167,17 @@ func addTagsAndCategories4Post(tx *sqlx.Tx, postID int64, tagIDs []int64, catego
 }
 
 func add(tx *sqlx.Tx, title, desc, body *string, authorID int64, keywords *string, postType *string, thumbnails *string) (int64, error) {
-	sql := `insert into post(p_title, p_desc, p_body, u_id, p_keywords, p_type, p_thumbnails) values(?, ?, ?, ?, ?, ?, ?)`
+	sql := `
+insert into post(p_title, p_desc, p_body, u_id, p_keywords, p_type, p_thumbnails, p_create_time, p_update_time) 
+values(
+   ifnull(?, ''), 
+   ifnull(?, ''), 
+   ifnull(?, ''), 
+   ?, 
+   ifnull(?, ''), 
+   ifnull(?, ''), 
+   ifnull(?, ''), now(), now()
+)`
 	res, err := tx.Exec(sql, title, desc, body, authorID, keywords, postType, thumbnails)
 	if err != nil {
 		return 0, err
@@ -296,4 +307,20 @@ func deleteByID(pid int64) (int64, error) {
 		}
 	}
 	return lastInsertID, nil
+}
+
+func updateInfo(p *dto.PostInfoUpdate) (int64, error) {
+	sql := `update post set u_email = ?, u_uname = ?, u_pwd_encrypted = sha1(concat(?, 'jun990527')), u_desc = ?, 
+           u_thumbnails = ?, u_sex = ?, u_birth = ?, u_tel = ?, u_active_time = now(), u_role = ? where u_id = ?`
+
+	dexss.SimpleText(p.Title)
+	dexss.SimpleText(p.Desc)
+	dexss.RichText(p.Body) // Body -> RichText
+	dexss.SimpleText(p.Keywords)
+	dexss.SimpleText(p.Type)
+	// 其他字段一般不会被发回，所以无需防御 XSS
+
+	return dao.Update(sql, p.Title, p.Desc, p.AuthorID, p.Keywords, p.Type, p.Thumbnails, p.Body, p.PIDReadOnly)
+
+	// TODO
 }

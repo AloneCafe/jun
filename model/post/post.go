@@ -94,3 +94,7 @@ func Add(title, desc, body *string,
 func DeleteByID(pid int64) (int64, error) {
 	return deleteByID(pid)
 }
+
+func UpdateInfo(p *dto.PostInfoUpdate) (int64, error) {
+	return updateInfo(p)
+}

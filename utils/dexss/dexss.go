@@ -11,12 +11,18 @@ var (
 
 func SimpleText(ss ...*string) {
 	for _, p := range ss {
+		if p == nil {
+			continue
+		}
 		*p = strict.Sanitize(*p)
 	}
 }
 
 func RichText(ss ...*string) {
 	for _, p := range ss {
+		if p == nil {
+			continue
+		}
 		*p = ugc.Sanitize(*p)
 	}
 }
